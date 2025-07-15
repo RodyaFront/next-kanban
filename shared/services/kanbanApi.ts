@@ -1,5 +1,5 @@
 import { IncomingMessage } from "http";
-import { Task } from "../types/kanban";
+import { Task, KanbanColumn } from "../types/kanban";
 
 const API_BASE = "/api/kanban";
 
@@ -88,4 +88,19 @@ export async function deleteTaskById(id: string): Promise<{ success: boolean }> 
  */
 export async function clearTasks(tasks: Task[]): Promise<void> {
   await Promise.all(tasks.map((task) => deleteTaskById(task.id)));
+}
+
+export async function updateTask(
+  taskId: string,
+  updates: Partial<{ title: string; description: string; status: KanbanColumn }>
+): Promise<Task> {
+  const response = await fetch(`/api/kanban/tasks`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id: taskId, ...updates }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to update task");
+  }
+  return response.json();
 }

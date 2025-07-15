@@ -1,19 +1,24 @@
-import {  NextPage } from 'next';
+import { useState } from "react";
+import { NextPage } from 'next';
 import { Task } from '@/shared/types/kanban';
 import { KanbanBoard } from '@/features/kanban/KanbanBoard';
+import { getTasksSSR, getTasksClient } from '@/shared/services/kanbanApi';
 
-interface Props {
-  tasks: Task[];
-}
+const HomePage: NextPage<{ tasks: Task[] }> = ({ tasks: initialTasks }) => {
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-const HomePage: NextPage<Props> = ({tasks}) => {
+  // Функция для повторного получения задач
+  const refetchTasks = async () => {
+    const freshTasks = await getTasksClient();
+    setTasks(freshTasks);
+  };
+
   return (
-      <KanbanBoard tasks={tasks}/>
+    <KanbanBoard tasks={tasks} refetchTasks={refetchTasks} />
   );
 };
 
 import { GetServerSideProps } from 'next';
-import { getTasksSSR } from '@/shared/services/kanbanApi';
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   let tasks: Task[] = [];
@@ -29,6 +34,5 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
-
 
 export default HomePage;
