@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getTasks, addTask, updateTask, deleteTask, Task } from '../../../lib/serverStore';
+import { getTasks, addTask, updateTask, deleteTask } from '../../../lib/serverStore';
+import { Task } from '@/shared/types/kanban';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -20,13 +21,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     if (!id) return res.status(400).json({ error: 'Task id required' });
     const ok = updateTask(id, updates);
     return ok ? res.status(200).json({ success: true }) : res.status(404).json({ error: 'Task not found' });
-  }
-  if (req.method === 'PATCH') {
-    const { id, ...updates } = req.body;
-    if (!id) return res.status(400).json({ error: 'Task id required' });
-    const ok = updateTask(id, updates);
-    if (!ok) return res.status(404).json({ error: 'Task not found' });
-    return res.status(200).json({ success: true });
   }
   if (req.method === 'DELETE') {
     const { id } = req.body;

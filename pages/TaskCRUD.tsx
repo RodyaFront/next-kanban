@@ -6,6 +6,7 @@ import {
   clearTasks,
 } from "@/shared/services/kanbanApi";
 import { Button } from "@/components/ui/button";
+import { KANBAN_COLUMNS } from "@/shared/constants/kanbanColumns";
 
 export default function TaskCRUD() {
   const [mounted, setMounted] = useState(false);
@@ -33,7 +34,7 @@ export default function TaskCRUD() {
       await addTask({
         title: "Task " + Math.random().toString(36).slice(2, 7),
         description: "Randomly generated task",
-        status: { id: "todo", title: "To Do" },
+        status: KANBAN_COLUMNS[0],
       });
       await fetchTasks();
     } catch (e) {

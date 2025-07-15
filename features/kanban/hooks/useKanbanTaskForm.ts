@@ -31,6 +31,7 @@ export const useKanbanTaskForm = ({
         title: title.trim(),
         description: description.trim() || undefined,
         status,
+        position: 0,
       });
       resetForm();
       onOpenChange(false);

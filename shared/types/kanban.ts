@@ -5,9 +5,11 @@ export type Task = {
   status?: KanbanColumn;
   createdAt: number;
   updatedAt: number;
+  position: number;
 };
 
 export type KanbanColumn = {
   id: string;
   title: string;
+  color: string;
 };

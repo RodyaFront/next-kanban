@@ -2,7 +2,7 @@ import { Task } from "@/shared/types/kanban";
 import { KanbanTaskCard } from "./components/KanbanTaskCard";
 import { KANBAN_COLUMNS } from "@/shared/constants/kanbanColumns";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { KanbanTaskCrudDialog } from "./components/KanbanTaskCrudDialog";
 import {
   DragDropContext,
@@ -17,22 +17,26 @@ interface Props {
   refetchTasks: () => void;
 }
 
-export function KanbanBoard({ tasks, refetchTasks }: Props) {
+export function KanbanBoard({ tasks: initialTasks, refetchTasks }: Props) {
+  const [localTasks, setLocalTasks] = useState(initialTasks);
   const [isCrudDialogVisible, setCrudDialogVisibility] = useState(false);
+
+  useEffect(() => {
+    setLocalTasks(initialTasks);
+  }, [initialTasks]);
 
   const toggleCrudDialog = () => setCrudDialogVisibility(!isCrudDialogVisible);
 
   // Группируем задачи по колонкам
   const tasksByColumn = KANBAN_COLUMNS.map((column) => ({
     ...column,
-    tasks: tasks.filter((task) => task.status?.id === column.id),
+    tasks: localTasks
+      .filter((task) => task.status?.id === column.id)
+      .sort((a, b) => a.position - b.position),
   }));
 
-  // Обработчик завершения перетаскивания
   const handleDragEnd = async (result: DropResult) => {
-    console.log(result);
-
-    const { source, destination, draggableId } = result;
+    const { source, destination } = result;
     if (!destination) return;
     if (
       source.droppableId === destination.droppableId &&
@@ -40,28 +44,100 @@ export function KanbanBoard({ tasks, refetchTasks }: Props) {
     )
       return;
 
-    const taskId = draggableId;
-    const newStatusId = destination.droppableId;
-    const newStatus = KANBAN_COLUMNS.find((col) => col.id === newStatusId);
-    if (!newStatus) return;
+    // Получаем “чистые” колонки
+    const sourceColumn = KANBAN_COLUMNS.find(col => col.id === source.droppableId);
+    const destColumn = KANBAN_COLUMNS.find(col => col.id === destination.droppableId);
+    if (!sourceColumn || !destColumn) return;
 
-    // Обновляем статус задачи через API
-    await updateTask(taskId, { status: newStatus });
+    // Копируем задачи
+    const sourceTasks = localTasks
+      .filter(task => task.status?.id === sourceColumn.id)
+      .sort((a, b) => a.position - b.position);
+    const destTasks = source.droppableId === destination.droppableId
+      ? sourceTasks
+      : localTasks
+          .filter(task => task.status?.id === destColumn.id)
+          .sort((a, b) => a.position - b.position);
+
+    // Перемещаем таск
+    const [movedTask] = sourceTasks.splice(source.index, 1);
+    destTasks.splice(destination.index, 0, {
+      ...movedTask,
+      status: destColumn,
+    });
+
+    // Пересчитываем позиции
+    const updatedSourceTasks = sourceTasks.map((task, idx) => ({
+      ...task,
+      position: idx,
+      status: sourceColumn,
+    }));
+    const updatedDestTasks = destTasks.map((task, idx) => ({
+      ...task,
+      position: idx,
+      status: destColumn,
+    }));
+
+    // Обновляем задачи на сервере параллельно
+    const tasksToUpdate =
+      source.droppableId === destination.droppableId
+        ? updatedDestTasks
+        : [...updatedSourceTasks, ...updatedDestTasks];
+
+    // 1. Optimistic update
+    setLocalTasks((prevTasks) => {
+      // Скопируйте prevTasks и примените к ним все изменения из tasksToUpdate
+      const updated = prevTasks.map((task) => {
+        const updatedTask = tasksToUpdate.find((t) => t.id === task.id);
+        return updatedTask
+          ? {
+              ...task,
+              position: updatedTask.position,
+              status: {
+                id: updatedTask.status.id,
+                title: updatedTask.status.title,
+                color: updatedTask.status.color,
+              },
+            }
+          : task;
+      });
+      return updated;
+    });
+
+    // 2. Серверное обновление
+    await Promise.all(
+      tasksToUpdate.map(task =>
+        updateTask(task.id, {
+          position: task.position,
+          status: {
+            id: task.status.id,
+            title: task.status.title,
+            color: task.status.color,
+          },
+        })
+      )
+    );
+
+    // 3. Синхронизация с сервером
     await refetchTasks();
   };
 
   return (
     <div className="p-4 bg-slate-900 min-h-screen text-slate-100">
       <div className="pb-4 flex justify-between">
-        <div>Tasks ({tasks?.length})</div>
+        <div>Tasks ({localTasks?.length})</div>
         <Button variant="default" onClick={toggleCrudDialog}>
           Add task +
         </Button>
       </div>
+
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="flex gap-2 tasks-container overflow-x-auto">
           {tasksByColumn.map((column) => (
-            <div key={column.id} className="flex flex-col p-4 rounded-lg bg-slate-800">
+            <div
+              key={column.id}
+              className="flex flex-col p-4 rounded-lg bg-slate-800"
+            >
               <div className="pb-4">
                 <b>{column.title}</b>
               </div>
@@ -70,22 +146,18 @@ export function KanbanBoard({ tasks, refetchTasks }: Props) {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="flex flex-col gap-2 min-w-[24rem] flex-grow"
+                    className="flex flex-col min-w-[24rem] flex-grow"
                   >
-                    <div className="flex flex-col gap-1 overflow-auto">
+                    <div className="flex flex-col overflow-auto">
                       {column.tasks.map((task, idx) => (
-                        <Draggable
-                          draggableId={task.id}
-                          index={idx}
-                          key={task.id}
-                        >
+                        <Draggable draggableId={task.id} index={idx} key={task.id}>
                           {(provided) => (
                             <div
                               ref={provided.innerRef}
                               {...provided.draggableProps}
-                              {...provided.dragHandleProps}
+                              className={idx !== column.tasks.length - 1 ? "mb-2" : ""}
                             >
-                              <KanbanTaskCard task={task} />
+                              <KanbanTaskCard task={task} dragHandleProps={provided.dragHandleProps ?? undefined} />
                             </div>
                           )}
                         </Draggable>
@@ -99,6 +171,7 @@ export function KanbanBoard({ tasks, refetchTasks }: Props) {
           ))}
         </div>
       </DragDropContext>
+
       <KanbanTaskCrudDialog
         open={isCrudDialogVisible}
         onOpenChange={setCrudDialogVisibility}

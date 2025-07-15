@@ -1,5 +1,5 @@
 import { IncomingMessage } from "http";
-import { Task, KanbanColumn } from "../types/kanban";
+import { Task } from "../types/kanban";
 
 const API_BASE = "/api/kanban";
 
@@ -92,10 +92,10 @@ export async function clearTasks(tasks: Task[]): Promise<void> {
 
 export async function updateTask(
   taskId: string,
-  updates: Partial<{ title: string; description: string; status: KanbanColumn }>
+  updates: Partial<Task>
 ): Promise<Task> {
   const response = await fetch(`/api/kanban/tasks`, {
-    method: "PATCH",
+    method: "PUT",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ id: taskId, ...updates }),
   });

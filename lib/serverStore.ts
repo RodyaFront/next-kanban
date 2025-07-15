@@ -1,10 +1,16 @@
 // In-memory хранилище задач
 
 import { Task } from "@/shared/types/kanban";
+import { mockTasks } from "@/shared/constants/mockTasks";
 
 const store = {
   tasks: [] as Task[],
 };
+
+// Инициализация моковых тасков при первом импорте модуля
+if (store.tasks.length === 0) {
+  store.tasks.push(...mockTasks);
+}
 
 export function getTasks(): Task[] {
   return store.tasks;
