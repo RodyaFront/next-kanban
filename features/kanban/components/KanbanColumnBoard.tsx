@@ -31,6 +31,11 @@ export function KanbanColumnBoard({ column, tasks }: KanbanColumnBoardProps) {
             }
           >
             <div className="flex flex-col overflow-auto">
+              {tasks.length === 0 && (
+                <div className="text-center text-slate-400/30 py-4" data-testid="empty-column-hint">
+                  No tasks in this column yet
+                </div>
+              )}
               {tasks.map((task, idx) => (
                 <Draggable draggableId={task.id} index={idx} key={task.id}>
                   {(provided) => (
