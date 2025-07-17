@@ -1,34 +1,20 @@
-// jest.config.ts
-import type { JestConfigWithTsJest } from 'ts-jest';
-import { pathsToModuleNameMapper } from 'ts-jest';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import { compilerOptions } from './tsconfig.json';
+/**
+ * For a detailed explanation regarding each configuration property, visit:
+ * https://jestjs.io/docs/configuration
+ */
 
-const config: JestConfigWithTsJest = {
-  preset: 'ts-jest',
+import nextJest from 'next/jest'
+import type { Config } from 'jest'
+
+const createJestConfig = nextJest({
+  dir: './', // путь к корню Next.js-проекта
+})
+
+const config: Config = {
+  coverageProvider: 'v8',
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
-  roots: ['<rootDir>'],
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
-  moduleDirectories: ['node_modules', '<rootDir>'],
-  transform: {
-    '^.+\\.(ts|tsx)$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.json',
-      },
-    ],
-  },
-  testMatch: [
-    '**/__tests__/**/*.?([mc])[jt]s?(x)',
-    '**/?(*.)+(spec|test).?([mc])[jt]s?(x)',
-  ],
-  transformIgnorePatterns: [
-    '\\node_modules\\',
-    '\.pnp\.[^\/]+$',
-  ],
-  coverageProvider: 'v8',
-};
+  // ...другие опции
+}
 
-export default config;
+export default createJestConfig(config)
