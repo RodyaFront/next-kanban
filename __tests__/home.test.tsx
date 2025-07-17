@@ -1,7 +1,13 @@
 import { render, screen } from '@testing-library/react';
-import HomePage from '../pages/index';
+import HomePage, { getServerSideProps } from '@/pages/index';
 import { Task } from '@/shared/types/kanban';
 import { KANBAN_COLUMNS } from '@/shared/constants/kanbanColumns';
+import { KanbanBoard } from '@/features/kanban/KanbanBoard';
+import { getTasksSSR } from '@/shared/services/kanbanApi';
+
+jest.mock('@/shared/services/kanbanApi', () => ({
+  getTasksSSR: jest.fn(),
+}));
 
 describe('HomePage', () => {
   it('должен отображать задачи, переданные через props', () => {
@@ -33,21 +39,33 @@ describe('HomePage', () => {
     expect(screen.getByText('Test Task 2')).toBeInTheDocument();
   });
 
-  it('должен обновлять задачи после вызова refetchTasks', async () => {
-    // TODO: реализовать тест обновления задач через refetchTasks
+  it('KanbanBoard рендерится без ошибок и содержит кнопку добавления задачи', () => {
+    render(<KanbanBoard tasks={[]} refetchTasks={jest.fn()} />);
+    expect(screen.getByText('Add task +')).toBeInTheDocument();
   });
 
-  it('должен передавать правильные props в KanbanBoard', () => {
-    // TODO: реализовать тест передачи props в KanbanBoard
+  it('SSR: возвращает задачи с сервера', async () => {
+    const mockTasks: Task[] = [
+      {
+        id: '1',
+        title: 'SSR Task',
+        description: '',
+        status: KANBAN_COLUMNS[0],
+        createdAt: 0,
+        updatedAt: 0,
+        position: 0,
+      },
+    ];
+    (getTasksSSR as jest.Mock).mockResolvedValueOnce(mockTasks);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await getServerSideProps({ req: {} } as any);
+    expect(result).toEqual({ props: { tasks: mockTasks } });
+  });
+
+  it('SSR: возвращает пустой массив, если getTasksSSR падает', async () => {
+    (getTasksSSR as jest.Mock).mockRejectedValueOnce(new Error('fail'));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const result = await getServerSideProps({ req: {} } as any);
+    expect(result).toEqual({ props: { tasks: [] } });
   });
 });
-
-describe('getServerSideProps', () => {
-  it('должен возвращать задачи при успешном ответе', async () => {
-    // TODO: реализовать тест успешного получения задач через getServerSideProps
-  });
-
-  it('должен возвращать пустой массив при ошибке', async () => {
-    // TODO: реализовать тест обработки ошибки в getServerSideProps
-  });
-}); 

@@ -175,6 +175,7 @@ export function KanbanBoard({ tasks: initialTasks, refetchTasks }: Props) {
               key={column.id}
               column={column}
               tasks={column.tasks}
+              allTasks={localTasks}
             />
           ))}
         </div>
