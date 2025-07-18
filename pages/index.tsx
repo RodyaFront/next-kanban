@@ -7,7 +7,6 @@ import { getTasksSSR, getTasksClient } from '@/shared/services/kanbanApi';
 const HomePage: NextPage<{ tasks: Task[] }> = ({ tasks: initialTasks }) => {
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  // Функция для повторного получения задач
   const refetchTasks = async () => {
     const freshTasks = await getTasksClient();
     setTasks(freshTasks);

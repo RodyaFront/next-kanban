@@ -27,11 +27,9 @@ function moveTaskAndRecalculatePositions(
 ): {
   tasksToUpdate: Task[];
 } {
-  // Получаем “чистые” колонки
   const sourceColumnId = source.droppableId;
   const destColumnId = destination.droppableId;
 
-  // Копируем задачи
   const sourceTasks = localTasks
     .filter((task) => task.status?.id === sourceColumnId)
     .sort((a, b) => a.position - b.position);
@@ -42,14 +40,12 @@ function moveTaskAndRecalculatePositions(
           .filter((task) => task.status?.id === destColumnId)
           .sort((a, b) => a.position - b.position);
 
-  // Перемещаем таск
   const [movedTask] = sourceTasks.splice(source.index, 1);
   destTasks.splice(destination.index, 0, {
     ...movedTask,
     status: destColumn,
   });
 
-  // Пересчитываем позиции
   const updatedSourceTasks = sourceTasks.map((task, idx) => ({
     ...task,
     position: idx,
@@ -61,7 +57,6 @@ function moveTaskAndRecalculatePositions(
     status: destColumn,
   }));
 
-  // Обновляем задачи на сервере параллельно
   const tasksToUpdate =
     sourceColumnId === destColumnId
       ? updatedDestTasks
@@ -136,7 +131,6 @@ export function KanbanBoard({ tasks: initialTasks, refetchTasks }: Props) {
     }
   };
 
-  // Группируем задачи по колонкам
   const tasksByColumn = KANBAN_COLUMNS.map((column) => ({
     ...column,
     tasks: localTasks

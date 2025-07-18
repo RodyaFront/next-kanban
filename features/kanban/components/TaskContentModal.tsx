@@ -23,10 +23,9 @@ type Props = {
   open: boolean;
   task: Task | null;
   onClose: () => void;
-  onSave: (updatedTask: Task) => void; // новый проп
+  onSave: (updatedTask: Task) => void; 
 };
 
-// SSR-friendly динамический импорт (Next.js best practice)
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave }) => {
@@ -53,9 +52,7 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
           <DialogTitle className="text-slate-200">Edit task</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 mt-4">
-          {/* Title + Status в один ряд */}
           <div className="flex gap-2">
-            {/* Title */}
             <div className="flex-1 space-y-2">
               <label htmlFor="title" className="text-sm font-medium text-slate-200">
                 Title
@@ -68,7 +65,6 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
                 aria-label="Task title"
               />
             </div>
-            {/* Status */}
             <div className="flex-shrink space-y-2">
               <label htmlFor="status" className="text-sm font-medium text-slate-200">
                 Status
@@ -97,7 +93,6 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
               </Select>
             </div>
           </div>
-          {/* Description */}
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium text-slate-200">
               Description
@@ -110,7 +105,6 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
               aria-label="Task description"
             />
           </div>
-          {/* Content (Markdown Editor) */}
           <div className="space-y-2">
             <label htmlFor="content" className="text-sm font-medium text-slate-200">
               Content (Markdown)
