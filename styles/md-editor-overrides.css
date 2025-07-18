@@ -1,0 +1,42 @@
+/* Markdown Editor Custom Overrides */
+
+.MDEditor-variant {
+    .w-md-editor {
+        --md-editor-background-color: #273245;
+    }
+}
+
+/* Пример: изменить фон тулбара */
+.w-md-editor-toolbar {
+    /**/
+}
+
+/* Пример: изменить цвет кнопок тулбара */
+.w-md-editor-toolbar button {
+    /**/
+}
+.w-md-editor-toolbar button:hover {
+    /**/
+}
+
+/* Пример: изменить фон и цвет textarea */
+.w-md-editor-text-input {
+    /**/
+}
+
+/* Пример: изменить цвет placeholder */
+.w-md-editor-text-input::placeholder {
+    /**/
+}
+
+/* Пример: изменить фон preview */
+.w-md-editor-preview {
+    /**/
+}
+
+/* Пример: изменить ширину редактора */
+.w-md-editor {
+    /**/
+}
+
+/* Добавляйте свои overwrite-стили ниже */ 

@@ -1,19 +1,17 @@
 import { Task } from "@/shared/types/kanban";
-import { KanbanTaskCard } from "./components/KanbanTaskCard";
 import { KANBAN_COLUMNS } from "@/shared/constants/kanbanColumns";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { KanbanTaskCrudDialog } from "./components/KanbanTaskCrudDialog";
 import {
   DragDropContext,
-  Droppable,
-  Draggable,
   DropResult,
   DraggableLocation,
 } from "@hello-pangea/dnd";
 import { updateTask } from "@/shared/services/kanbanApi";
 import { KanbanColumn } from "@/shared/types/kanban";
 import { KanbanColumnBoard } from "./components/KanbanColumnBoard";
+import { TaskContentModal } from "./components/TaskContentModal";
 
 interface Props {
   tasks: Task[];
@@ -27,8 +25,6 @@ function moveTaskAndRecalculatePositions(
   sourceColumn: KanbanColumn,
   destColumn: KanbanColumn
 ): {
-  updatedSourceTasks: Task[];
-  updatedDestTasks: Task[];
   tasksToUpdate: Task[];
 } {
   // Получаем “чистые” колонки
@@ -112,12 +108,33 @@ async function updateTasksOnServer(tasksToUpdate: Task[]) {
 export function KanbanBoard({ tasks: initialTasks, refetchTasks }: Props) {
   const [localTasks, setLocalTasks] = useState(initialTasks);
   const [isCrudDialogVisible, setCrudDialogVisibility] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     setLocalTasks(initialTasks);
   }, [initialTasks]);
 
   const toggleCrudDialog = () => setCrudDialogVisibility(!isCrudDialogVisible);
+
+  const handleTaskClick = (task: Task) => {
+    setSelectedTask(task);
+    setModalOpen(true);
+  };
+
+  const handleSaveTask = async (updatedTask: Task) => {
+    setLocalTasks(prev =>
+      prev.map(t => (t.id === updatedTask.id ? updatedTask : t))
+    );
+
+    try {
+      await updateTask(updatedTask.id, updatedTask);
+      refetchTasks();
+    } catch (error) {
+      console.error("Failed to update task", error);
+      refetchTasks();
+    }
+  };
 
   // Группируем задачи по колонкам
   const tasksByColumn = KANBAN_COLUMNS.map((column) => ({
@@ -176,6 +193,7 @@ export function KanbanBoard({ tasks: initialTasks, refetchTasks }: Props) {
               column={column}
               tasks={column.tasks}
               allTasks={localTasks}
+              onTaskClick={handleTaskClick}
             />
           ))}
         </div>
@@ -185,6 +203,12 @@ export function KanbanBoard({ tasks: initialTasks, refetchTasks }: Props) {
         open={isCrudDialogVisible}
         onOpenChange={setCrudDialogVisibility}
         onTaskCreated={refetchTasks}
+      />
+      <TaskContentModal
+        open={isModalOpen}
+        task={selectedTask}
+        onClose={() => setModalOpen(false)}
+        onSave={handleSaveTask}
       />
     </div>
   );

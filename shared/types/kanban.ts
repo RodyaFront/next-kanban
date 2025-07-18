@@ -3,6 +3,7 @@ export type Task = {
   title: string;
   description?: string;
   status: KanbanColumn;
+  content?: string;
   createdAt: number;
   updatedAt: number;
   position: number;

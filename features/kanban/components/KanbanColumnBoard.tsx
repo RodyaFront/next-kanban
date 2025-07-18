@@ -10,12 +10,14 @@ interface KanbanColumnBoardProps {
   column: KanbanColumn;
   tasks: Task[];
   allTasks: Task[];
+  onTaskClick?: (task: Task) => void;
 }
 
 export function KanbanColumnBoard({
   column,
   tasks,
   allTasks = [],
+  onTaskClick,
 }: KanbanColumnBoardProps) {
   const showEmptyHint = tasks.length === 0;
   const showVariant = showEmptyHint && allTasks.length > 0;
@@ -63,6 +65,7 @@ export function KanbanColumnBoard({
                       <KanbanTaskCard
                         task={task}
                         dragHandleProps={provided.dragHandleProps ?? undefined}
+                        onClick={onTaskClick}
                       />
                     </div>
                   )}
