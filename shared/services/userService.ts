@@ -9,6 +9,7 @@ const users: User[] = [
     email: 'admin@example.com',
     password: 'admin123',
     role: UserRole.ADMIN,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=admin',
   },
   {
     id: '2',
@@ -16,6 +17,7 @@ const users: User[] = [
     email: 'manager@example.com',
     password: 'manager123',
     role: UserRole.MANAGER,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=manager',
   },
   {
     id: '3',
@@ -23,6 +25,7 @@ const users: User[] = [
     email: 'developer@example.com',
     password: 'dev123',
     role: UserRole.DEVELOPER,
+    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=developer',
   },
 ];
 

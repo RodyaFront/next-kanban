@@ -19,11 +19,15 @@ const HomePage: NextPage<{ tasks: Task[] }> = ({ tasks: initialTasks }) => {
   };
 
   return (
+    <div className="min-h-screen bg-gray-900">
+    <Header />
     <KanbanBoard tasks={tasks} refetchTasks={refetchTasks} />
+  </div>
   );
 };
 
 import { GetServerSideProps } from 'next';
+import Header from "@/components/layout/Header";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   let tasks: Task[] = [];

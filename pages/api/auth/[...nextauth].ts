@@ -33,6 +33,7 @@ export default NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role;
+        token.avatar = user.avatar;
       }
       return token;
     },
@@ -40,6 +41,7 @@ export default NextAuth({
       if (token && session.user) {
         session.user.id = token.sub || '';
         session.user.role = token.role;
+        session.user.avatar = token.avatar;
       }
       return session;
     },
