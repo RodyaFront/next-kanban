@@ -9,13 +9,18 @@ import {
   DraggableLocation,
 } from "@hello-pangea/dnd";
 import { updateTask } from "@/shared/services/kanbanApi";
+import { TaskFilters } from "@/shared/services/kanbanApi";
 import { KanbanColumn } from "@/shared/types/kanban";
 import { KanbanColumnBoard } from "./components/KanbanColumnBoard";
 import { TaskContentModal } from "./components/TaskContentModal";
+import { ExecutorFilter } from "./components/ExecutorFilter";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface Props {
   tasks: Task[];
   refetchTasks: () => void;
+  filters: TaskFilters;
+  setFilters: React.Dispatch<React.SetStateAction<TaskFilters>>;
 }
 
 function moveTaskAndRecalculatePositions(
@@ -100,7 +105,7 @@ async function updateTasksOnServer(tasksToUpdate: Task[]) {
   );
 }
 
-export function KanbanBoard({ tasks: initialTasks, refetchTasks }: Props) {
+export function KanbanBoard({ tasks: initialTasks, refetchTasks, filters, setFilters }: Props) {
   const [localTasks, setLocalTasks] = useState(initialTasks);
   const [isCrudDialogVisible, setCrudDialogVisibility] = useState(false);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -173,7 +178,12 @@ export function KanbanBoard({ tasks: initialTasks, refetchTasks }: Props) {
 
   return (
     <div className="p-4 bg-slate-900 min-h-screen text-slate-100">
-      <div className="pb-4 flex gap-2">
+      
+      <div className="pb-4 flex gap-2 items-end">
+        <ExecutorFilter
+          value={filters.assigneeId}
+          onChange={assigneeId => setFilters(f => ({ ...f, assigneeId }))}
+        />
         <Button variant="default" onClick={toggleCrudDialog}>
           Add task +
         </Button>

@@ -2,9 +2,31 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getTasks, addTask, updateTask, deleteTask } from '../../../lib/serverStore';
 import { Task } from '@/shared/types/kanban';
 
+// Универсальная декларативная фильтрация задач
+type TaskFilter = (task: Task, value: string | string[] | undefined) => boolean;
+
+const filterMap: Record<string, TaskFilter> = {
+  assigneeId: (task, value) => task.assignee === value,
+  statusId: (task, value) => task.status?.id === value,
+  // tags: (task, value) => Array.isArray(task.tags) && value.every((tag: string) => task.tags.includes(tag)),
+  // ...добавляйте новые фильтры здесь
+};
+
+function filterTasks(tasks: Task[], filters: Record<string, string | string[] | undefined>): Task[] {
+  return tasks.filter(task =>
+    Object.entries(filters).every(([key, value]) => {
+      if (value === undefined) return true;
+      const filterFn = filterMap[key];
+      return filterFn ? filterFn(task, value) : true;
+    })
+  );
+}
+
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
-    return res.status(200).json(getTasks());
+    let tasks = getTasks();
+    tasks = filterTasks(tasks, req.query);
+    return res.status(200).json(tasks);
   }
   if (req.method === 'POST') {
     const task: Task = {

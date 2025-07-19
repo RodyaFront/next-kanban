@@ -1,6 +1,31 @@
 import { IncomingMessage } from "http";
 import { Task } from "../types/kanban";
 
+// Тип фильтров для задач
+export type TaskFilters = {
+  assigneeId?: string;
+  statusId?: string;
+  tags?: string[];
+  // можно расширять в будущем
+  [key: string]: string | string[] | undefined;
+};
+
+// Вспомогательная функция для сериализации фильтров в query string
+function buildTaskQuery(filters?: TaskFilters): string {
+  if (!filters) return "";
+  const params = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    if (Array.isArray(value)) {
+      value.forEach((v) => params.append(key, v));
+    } else {
+      params.append(key, value);
+    }
+  });
+  const query = params.toString();
+  return query ? `?${query}` : "";
+}
+
 const API_BASE = "/api/kanban";
 
 /**
@@ -31,14 +56,11 @@ async function safeFetch<T>(
  */
 export async function getTasksSSR(
   req: IncomingMessage,
-  params?: Record<string, string>
+  filters?: TaskFilters
 ): Promise<Task[]> {
   const baseUrl = req ? `http://${req.headers.host}` : "";
   let url = `${baseUrl}${API_BASE}/tasks`;
-  if (params) {
-    const query = new URLSearchParams(params).toString();
-    url += `?${query}`;
-  }
+  url += buildTaskQuery(filters);
   return await safeFetch<Task[]>(url);
 }
 
@@ -46,14 +68,11 @@ export async function getTasksSSR(
  * Получить задачи (client-side)
  */
 export async function getTasksClient(
-  params?: Record<string, string>,
+  filters?: TaskFilters,
   signal?: AbortSignal
 ): Promise<Task[]> {
   let url = `${API_BASE}/tasks`;
-  if (params) {
-    const query = new URLSearchParams(params).toString();
-    url += `?${query}`;
-  }
+  url += buildTaskQuery(filters);
   return await safeFetch<Task[]>(url, { signal });
 }
 
