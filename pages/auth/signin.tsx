@@ -100,7 +100,7 @@ const SignIn = () => {
           <div>
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || !email || !password}
               className="w-full"
               aria-label="Sign in"
             >
