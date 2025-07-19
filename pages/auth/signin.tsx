@@ -24,12 +24,12 @@ const SignIn = () => {
       });
 
       if (result?.error) {
-        setError('Неверный email или пароль');
+        setError('Invalid email or password');
       } else {
         router.push('/');
       }
     } catch {
-      setError('Произошла ошибка при входе');
+      setError('An error occurred during sign in');
     } finally {
       setIsLoading(false);
     }
@@ -45,11 +45,11 @@ const SignIn = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-900">
       <div className="max-w-md w-full space-y-8 p-8 bg-gray-800 rounded-lg shadow-lg">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
-            Вход в систему
+          <h2 className="text-center text-3xl font-extrabold text-white">
+            Sign In
           </h2>
           <p className="mt-2 text-center text-sm text-gray-400">
-            Введите ваши учетные данные
+            Enter your credentials
           </p>
         </div>
         
@@ -74,7 +74,7 @@ const SignIn = () => {
             
             <div>
               <label htmlFor="password" className="sr-only">
-                Пароль
+                Password
               </label>
               <Input
                 id="password"
@@ -85,8 +85,8 @@ const SignIn = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Пароль"
-                aria-label="Пароль"
+                placeholder="Password"
+                aria-label="Password"
               />
             </div>
           </div>
@@ -102,20 +102,20 @@ const SignIn = () => {
               type="submit"
               disabled={isLoading}
               className="w-full"
-              aria-label="Войти в систему"
+              aria-label="Sign in"
             >
-              {isLoading ? 'Вход...' : 'Войти'}
+              {isLoading ? 'Signing in...' : 'Sign In'}
             </Button>
           </div>
         </form>
 
         <div className="mt-6">
           <div className="text-center text-sm text-gray-400">
-            <p>Тестовые учетные данные:</p>
+            <p>Test accounts:</p>
             <div className="mt-2 space-y-1 text-xs">
-              <p>Администратор: admin@example.com / admin123</p>
-              <p>Менеджер: manager@example.com / manager123</p>
-              <p>Разработчик: developer@example.com / dev123</p>
+              <p>Admin: admin@example.com / admin123</p>
+              <p>Manager: manager@example.com / manager123</p>
+              <p>Developer: developer@example.com / dev123</p>
             </div>
           </div>
         </div>
