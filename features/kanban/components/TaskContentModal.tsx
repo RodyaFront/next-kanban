@@ -97,11 +97,11 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
             <label htmlFor="description" className="text-sm font-medium text-slate-200">
               Description
             </label>
-            <textarea
+            <Input
               id="description"
               value={description}
               onChange={e => setDescription(e.target.value)}
-              className="flex min-h-[80px] w-full rounded-md border border-slate-600 bg-slate-700 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="bg-slate-700 border-slate-600 text-slate-100 placeholder:text-slate-400"
               aria-label="Task description"
             />
           </div>
@@ -114,7 +114,7 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
               <MDEditor
                 value={content}
                 onChange={value => setContent(value || "")}
-                height={200}
+                height='calc(100vh - 400px)'
                 preview="edit"
                 textareaProps={{
                   id: "content",
