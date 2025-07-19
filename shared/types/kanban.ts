@@ -7,6 +7,7 @@ export type Task = {
   createdAt: number;
   updatedAt: number;
   position: number;
+  createdBy: string;
 };
 
 export type KanbanColumn = {

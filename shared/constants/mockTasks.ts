@@ -11,6 +11,7 @@ export const mockTasks: Task[] = [
       createdAt: Date.now(),
       updatedAt: Date.now(),
       position: 0,
+      createdBy: "1",
     },
     {
       id: "2",
@@ -20,6 +21,7 @@ export const mockTasks: Task[] = [
       createdAt: Date.now(),
       updatedAt: Date.now(),
       position: 0,
+      createdBy: "2", 
     },
     {
       id: "3",
@@ -29,6 +31,7 @@ export const mockTasks: Task[] = [
       createdAt: Date.now(),
       updatedAt: Date.now(),
       position: 1,
+      createdBy: "3", 
     },
     {
       id: "4",
@@ -38,5 +41,6 @@ export const mockTasks: Task[] = [
       createdAt: Date.now(),
       updatedAt: Date.now(),
       position: 0,
+      createdBy: "1", 
     },
   ];

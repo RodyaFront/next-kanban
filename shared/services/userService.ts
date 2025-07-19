@@ -68,4 +68,9 @@ export const getAllUsers = (): User[] => {
 export const getUsersForAssignment = (): User[] => {
   // Возвращаем всех пользователей кроме администратора для назначения задач
   return users.filter(user => user.role !== UserRole.ADMIN);
+};
+
+export const getUserName = (id: string): string => {
+  const user = users.find(u => u.id === id);
+  return user?.name || 'Unknown user';
 }; 
