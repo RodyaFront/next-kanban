@@ -8,6 +8,7 @@ export type Task = {
   updatedAt: number;
   position: number;
   createdBy: string;
+  assignee: string;
 };
 
 export type KanbanColumn = {

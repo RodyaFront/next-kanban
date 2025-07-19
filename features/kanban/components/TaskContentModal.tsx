@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/select";
 import { Task } from "@/shared/types/kanban";
 import { KANBAN_COLUMNS } from "@/shared/constants/kanbanColumns";
+import { getUsersForAssignment } from "@/shared/services/userService";
+import { User } from "@/shared/types/user";
 
 type Props = {
   open: boolean;
@@ -33,6 +35,12 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState(KANBAN_COLUMNS[0]);
   const [content, setContent] = useState("");
+  const [assignee, setAssignee] = useState("");
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    setUsers(getUsersForAssignment());
+  }, []);
 
   useEffect(() => {
     if (task) {
@@ -40,6 +48,7 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
       setDescription(task.description || "");
       setStatus(task.status);
       setContent(task.content || "");
+      setAssignee(task.assignee || "");
     }
   }, [task]);
 
@@ -92,6 +101,35 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
                 </SelectContent>
               </Select>
             </div>
+            <div className="flex-shrink space-y-2">
+              <label htmlFor="assignee" className="text-sm font-medium text-slate-200">
+                Executive
+              </label>
+              <Select
+                value={assignee}
+                onValueChange={setAssignee}
+              >
+                <SelectTrigger className="bg-slate-700 border-slate-600 text-slate-100">
+                  <SelectValue placeholder="Select executor" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  {users.map(user => (
+                    <SelectItem
+                      key={user.id}
+                      value={user.id}
+                      className="text-slate-100 hover:bg-slate-600 focus:bg-slate-600"
+                    >
+                      <span className="flex items-center gap-2">
+                        {user.avatar && (
+                          <img src={user.avatar} alt="avatar" className="w-5 h-5 rounded-full" />
+                        )}
+                        {user.name}
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium text-slate-200">
@@ -114,7 +152,6 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
               <MDEditor
                 value={content}
                 onChange={value => setContent(value || "")}
-                height='calc(100vh - 400px)'
                 preview="edit"
                 textareaProps={{
                   id: "content",
@@ -144,6 +181,7 @@ export const TaskContentModal: React.FC<Props> = ({ open, task, onClose, onSave 
                 description,
                 status,
                 content,
+                assignee,
                 updatedAt: Date.now(),
               });
               onClose();

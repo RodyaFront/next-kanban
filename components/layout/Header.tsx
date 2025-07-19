@@ -56,9 +56,9 @@ const Header = () => {
               onClick={handleSignOut}
               variant="outline"
               size="sm"
-              aria-label="Выйти из системы"
+              aria-label="Logout from application"
             >
-              Выйти
+              Logout
             </Button>
           </div>
         </div>

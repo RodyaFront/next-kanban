@@ -16,15 +16,20 @@ export const useKanbanTaskForm = ({
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState<KanbanColumn>(KANBAN_COLUMNS[0]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [content, setContent] = useState("");
+  const [assignee, setAssignee] = useState("");
 
   const resetForm = useCallback(() => {
     setTitle("");
     setDescription("");
     setStatus(KANBAN_COLUMNS[0]);
+    setContent("");
+    setAssignee("");
   }, []);
 
   const handleSubmit = useCallback(async () => {
     if (!title.trim()) return;
+    if (!assignee) return;
     setIsSubmitting(true);
     try {
       const newTask = await addTask({
@@ -32,6 +37,8 @@ export const useKanbanTaskForm = ({
         description: description.trim() || undefined,
         status,
         position: 0,
+        content: content || undefined,
+        assignee,
       });
       resetForm();
       onOpenChange(false);
@@ -41,7 +48,7 @@ export const useKanbanTaskForm = ({
     } finally {
       setIsSubmitting(false);
     }
-  }, [title, description, status, onOpenChange, onTaskCreated, resetForm]);
+  }, [title, description, status, content, assignee, onOpenChange, onTaskCreated, resetForm]);
 
   const handleCancel = useCallback(() => {
     resetForm();
@@ -65,6 +72,10 @@ export const useKanbanTaskForm = ({
     setDescription,
     status,
     setStatus,
+    content,
+    setContent,
+    assignee,
+    setAssignee,
     isSubmitting,
     handleSubmit,
     handleCancel,
