@@ -1,16 +1,26 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import SignIn from '@/pages/auth/signin';
+import SignIn, { ERROR_INVALID_CREDENTIALS } from '@/pages/auth/signin';
+import { signIn } from 'next-auth/react';
 
-// Используем jest.mock с import, а не require:
+// Мокаем signIn из next-auth/react
+jest.mock('next-auth/react', () => ({
+  signIn: jest.fn(),
+}));
+
+const mockPush = jest.fn();
 jest.mock('next/router', () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: mockPush,
     prefetch: jest.fn(),
   }),
 }));
 
 describe('SignIn Page', () => {
+  beforeEach(() => {
+    mockPush.mockClear();
+  });
+
   it('renders the sign in form', () => {
     render(<SignIn />);
     expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
@@ -54,32 +64,73 @@ describe('SignIn Page', () => {
   });
 
   // Should call signIn on submit
-  it('calls signIn with correct credentials on submit', () => {
-    // TODO: Mock signIn, fill fields, submit form, check call
+  it('calls signIn with correct credentials on submit', async () => {
+    render(<SignIn />);
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password/i);
+    const button = screen.getByRole('button', { name: /sign in/i });
+
+    await userEvent.type(emailInput, 'test@example.com');
+    await userEvent.type(passwordInput, 'password123');
+    await userEvent.click(button);
+
+    expect(signIn).toHaveBeenCalledWith('credentials', {
+      redirect: false,
+      email: 'test@example.com',
+      password: 'password123',
+    });
   });
 
   // Should show error on failed sign in
-  it('shows error message on failed sign in', () => {
-    // TODO: Simulate signIn error and check error message
+  it('shows error message on failed sign in', async () => {
+    (signIn as jest.Mock).mockResolvedValue({ error: 'Invalid credentials' });
+    render(<SignIn />);
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password/i);
+    const button = screen.getByRole('button', { name: /sign in/i });
+
+    await userEvent.type(emailInput, 'test@example.com');
+    await userEvent.type(passwordInput, 'password123');
+    await userEvent.click(button);
+
+    expect(await screen.findByText(ERROR_INVALID_CREDENTIALS)).toBeInTheDocument();
   });
 
   // Should redirect on successful sign in
-  it('redirects to home on successful sign in', () => {
-    // TODO: Simulate successful signIn and check router.push('/')
+  it('redirects to home on successful sign in', async () => {
+    (signIn as jest.Mock).mockResolvedValue({ error: undefined });
+
+    render(<SignIn />);
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password/i);
+    const button = screen.getByRole('button', { name: /sign in/i });
+
+    await userEvent.type(emailInput, 'test@example.com');
+    await userEvent.type(passwordInput, 'password123');
+    await userEvent.click(button);
+
+    expect(mockPush).toHaveBeenCalledWith('/');
   });
 
   // Should show loading state when submitting
-  it('shows loading state when submitting', () => {
-    // TODO: Simulate isLoading and check button text/disabled
-  });
+  it('shows loading state when submitting', async () => {
+    let resolvePromise: (value?: unknown) => void = () => {};
+    (signIn as jest.Mock).mockImplementation(() => new Promise(res => { resolvePromise = res; }));
 
-  // Accessibility: fields have aria-labels
-  it('has accessible labels for inputs and button', () => {
-    // TODO: Check aria-labels for email, password, and button
-  });
+    render(<SignIn />);
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password/i);
+    const button = screen.getByRole('button', { name: /sign in/i });
 
-  // Enter key submits the form
-  it('submits form on Enter key in password field', () => {
-    // TODO: Simulate Enter key and check submit
+    await userEvent.type(emailInput, 'test@example.com');
+    await userEvent.type(passwordInput, 'password123');
+    await userEvent.click(button);
+
+    // Кнопка должна быть задизейблена и показывать "Signing in..."
+    expect(button).toBeDisabled();
+    expect(button).toHaveTextContent(/signing in/i);
+
+    // Завершаем промис, чтобы не было висящих асинхронных операций
+    resolvePromise();
   });
 }); 
