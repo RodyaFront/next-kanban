@@ -4,6 +4,8 @@ import { useRouter } from 'next/router';
 import { Button } from '../../components/ui/button';
 import { Input } from '../../components/ui/input';
 
+export const ERROR_INVALID_CREDENTIALS = 'Invalid email or password';
+
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,7 +26,7 @@ const SignIn = () => {
       });
 
       if (result?.error) {
-        setError('Invalid email or password');
+        setError(ERROR_INVALID_CREDENTIALS);
       } else {
         router.push('/');
       }
