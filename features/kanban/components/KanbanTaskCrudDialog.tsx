@@ -87,7 +87,6 @@ export function KanbanTaskCrudDialog({
 
           <div className="space-y-2 flex gap-2">
             
-          {/* Status Select */}
             <div>
               <label
                 htmlFor="assignee"
@@ -122,7 +121,6 @@ export function KanbanTaskCrudDialog({
               </Select>
             </div>
             
-          {/* Executor Select */}
             <div>
               <label
                 htmlFor="status"
@@ -158,7 +156,6 @@ export function KanbanTaskCrudDialog({
           </div>
 
 
-          {/* Description Input */}
           <div className="space-y-2">
             <label
               htmlFor="description"
@@ -177,7 +174,6 @@ export function KanbanTaskCrudDialog({
             />
           </div>
 
-          {/* Content Markdown Editor */}
           <div className="space-y-2">
             <label
               htmlFor="content"

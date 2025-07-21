@@ -16,7 +16,7 @@ const mockColumn: KanbanColumn = {
 };
 
 describe("KanbanColumnBoard", () => {
-  it("отрисовывает задачи, если они есть", () => {
+  it("renders tasks if present", () => {
     const tasks = [
       {
         id: "1",
@@ -25,6 +25,8 @@ describe("KanbanColumnBoard", () => {
         position: 0,
         createdAt: 0,
         updatedAt: 0,
+        createdBy: "user1",
+        assignee: "user2",
       },
     ];
     render(
@@ -36,7 +38,7 @@ describe("KanbanColumnBoard", () => {
     );
     expect(screen.getByText("Test Task")).toBeInTheDocument();
   });
-  it("отображает плейсхолдер, если задач нет", () => {
+  it("shows placeholder if no tasks", () => {
     render(
       <Provider store={store}>
         <DragDropContext onDragEnd={() => {}}>
@@ -48,7 +50,7 @@ describe("KanbanColumnBoard", () => {
       KANBAN_COLUMN_EMPTY_HINT
     );
   });
-  it("отображает плейсхолдер, если задачи есть, но не в текущей колонке", () => {
+  it("shows placeholder if tasks exist but not in this column", () => {
     render(
       <Provider store={store}>
         <DragDropContext onDragEnd={() => {}}>
@@ -63,6 +65,8 @@ describe("KanbanColumnBoard", () => {
                 position: 0,
                 createdAt: 0,
                 updatedAt: 0,
+                createdBy: "user1",
+                assignee: "user2",
               },
             ]}
           />

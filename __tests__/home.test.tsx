@@ -10,7 +10,7 @@ jest.mock('@/shared/services/kanbanApi', () => ({
 }));
 
 describe('HomePage', () => {
-  it('должен отображать задачи, переданные через props', () => {
+  it('should display tasks passed via props', () => {
     const mockTasks: Task[] = [
       {
         id: '1',
@@ -20,6 +20,8 @@ describe('HomePage', () => {
         createdAt: 0,
         updatedAt: 0,
         position: 0,
+        createdBy: 'user1',
+        assignee: 'user2',
       },
       {
         id: '2',
@@ -29,22 +31,30 @@ describe('HomePage', () => {
         createdAt: 0,
         updatedAt: 0,
         position: 1,
+        createdBy: 'user1',
+        assignee: 'user2',
       },
     ];
 
     render(<HomePage tasks={mockTasks} />);
 
-    // Проверяем, что обе задачи отображаются
     expect(screen.getByText('Test Task 1')).toBeInTheDocument();
     expect(screen.getByText('Test Task 2')).toBeInTheDocument();
   });
 
-  it('KanbanBoard рендерится без ошибок и содержит кнопку добавления задачи', () => {
-    render(<KanbanBoard tasks={[]} refetchTasks={jest.fn()} />);
+  it('KanbanBoard renders without errors and contains add task button', () => {
+    render(
+      <KanbanBoard
+        tasks={[]}
+        refetchTasks={jest.fn()}
+        filters={{}}
+        setFilters={jest.fn()}
+      />
+    );
     expect(screen.getByText('Add task +')).toBeInTheDocument();
   });
 
-  it('SSR: возвращает задачи с сервера', async () => {
+  it('SSR: returns tasks from server', async () => {
     const mockTasks: Task[] = [
       {
         id: '1',
@@ -54,6 +64,8 @@ describe('HomePage', () => {
         createdAt: 0,
         updatedAt: 0,
         position: 0,
+        createdBy: 'user1',
+        assignee: 'user2',
       },
     ];
     (getTasksSSR as jest.Mock).mockResolvedValueOnce(mockTasks);
@@ -62,7 +74,7 @@ describe('HomePage', () => {
     expect(result).toEqual({ props: { tasks: mockTasks } });
   });
 
-  it('SSR: возвращает пустой массив, если getTasksSSR падает', async () => {
+  it('SSR: returns empty array if getTasksSSR fails', async () => {
     (getTasksSSR as jest.Mock).mockRejectedValueOnce(new Error('fail'));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const result = await getServerSideProps({ req: {} } as any);

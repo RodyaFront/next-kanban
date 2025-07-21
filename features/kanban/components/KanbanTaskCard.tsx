@@ -3,7 +3,7 @@ import { Task } from "@/shared/types/kanban";
 interface Props {
   task: Task;
   dragHandleProps?: React.HTMLAttributes<HTMLSpanElement>;
-  onClick?: (task: Task) => void; // добавляем проп
+  onClick?: (task: Task) => void;
 }
 
 export function KanbanTaskCard({ task, dragHandleProps, onClick }: Props) {

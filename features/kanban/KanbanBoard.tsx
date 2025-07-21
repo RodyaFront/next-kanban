@@ -14,7 +14,6 @@ import { KanbanColumn } from "@/shared/types/kanban";
 import { KanbanColumnBoard } from "./components/KanbanColumnBoard";
 import { TaskContentModal } from "./components/TaskContentModal";
 import { ExecutorFilter } from "./components/ExecutorFilter";
-import { ReloadIcon } from "@radix-ui/react-icons";
 
 interface Props {
   tasks: Task[];

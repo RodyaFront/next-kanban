@@ -6,7 +6,7 @@ export interface User {
   email: string;
   role: UserRole;
   password: string;
-  avatar?: string; // URL аватара (опциональное поле)
+  avatar?: string; 
 }
 
 export interface UserWithoutPassword {
@@ -14,7 +14,7 @@ export interface UserWithoutPassword {
   name: string;
   email: string;
   role: UserRole;
-  avatar?: string; // URL аватара (опциональное поле)
+  avatar?: string; 
 }
 
 export interface UserRepository {

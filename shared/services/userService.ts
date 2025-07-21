@@ -1,7 +1,6 @@
 import { User, UserRepository, UserWithoutPassword } from '../types/user';
 import { UserRole } from '../constants/userRoles';
 
-// Моковые пользователи (в реальном приложении это будет база данных)
 const users: User[] = [
   {
     id: '1',
@@ -43,10 +42,8 @@ class MockUserRepository implements UserRepository {
   }
 }
 
-// Экспортируем экземпляр репозитория
 export const userRepository = new MockUserRepository();
 
-// Вспомогательные функции
 export const findUserByEmail = (email: string): User | undefined => {
   return userRepository.findByEmail(email);
 };
@@ -66,7 +63,6 @@ export const getAllUsers = (): User[] => {
 };
 
 export const getUsersForAssignment = (): User[] => {
-  // Возвращаем всех пользователей кроме администратора для назначения задач
   return users.filter(user => user.role !== UserRole.ADMIN);
 };
 

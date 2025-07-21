@@ -2,14 +2,11 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { getTasks, addTask, updateTask, deleteTask } from '../../../lib/taskService';
 import { Task } from '@/shared/types/kanban';
 
-// Универсальная декларативная фильтрация задач
 type TaskFilter = (task: Task, value: string | string[] | undefined) => boolean;
 
 const filterMap: Record<string, TaskFilter> = {
   assigneeId: (task, value) => task.assignee === value,
   statusId: (task, value) => task.status?.id === value,
-  // tags: (task, value) => Array.isArray(task.tags) && value.every((tag: string) => task.tags.includes(tag)),
-  // ...добавляйте новые фильтры здесь
 };
 
 function filterTasks(tasks: Task[], filters: Record<string, string | string[] | undefined>): Task[] {

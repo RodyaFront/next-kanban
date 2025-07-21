@@ -1,16 +1,13 @@
 import { IncomingMessage } from "http";
 import { Task } from "../types/kanban";
 
-// Тип фильтров для задач
 export type TaskFilters = {
   assigneeId?: string;
   statusId?: string;
   tags?: string[];
-  // можно расширять в будущем
   [key: string]: string | string[] | undefined;
 };
 
-// Вспомогательная функция для сериализации фильтров в query string
 function buildTaskQuery(filters?: TaskFilters): string {
   if (!filters) return "";
   const params = new URLSearchParams();
@@ -28,9 +25,6 @@ function buildTaskQuery(filters?: TaskFilters): string {
 
 const API_BASE = "/api/kanban";
 
-/**
- * Universal fetch wrapper with error handling and abort support
- */
 async function safeFetch<T>(
   url: string,
   options?: RequestInit & { signal?: AbortSignal }
@@ -51,9 +45,6 @@ async function safeFetch<T>(
   }
 }
 
-/**
- * Получить задачи (SSR)
- */
 export async function getTasksSSR(
   req: IncomingMessage,
   filters?: TaskFilters
@@ -64,9 +55,6 @@ export async function getTasksSSR(
   return await safeFetch<Task[]>(url);
 }
 
-/**
- * Получить задачи (client-side)
- */
 export async function getTasksClient(
   filters?: TaskFilters,
   signal?: AbortSignal
@@ -76,11 +64,6 @@ export async function getTasksClient(
   return await safeFetch<Task[]>(url, { signal });
 }
 
-/**
- * Добавить задачу
- * @param payload - данные задачи (без id)
- * @returns созданная задача
- */
 export async function addTask(payload: Partial<Task>): Promise<Task> {
   return await safeFetch<Task>(`${API_BASE}/tasks`, {
     method: "POST",
@@ -89,10 +72,6 @@ export async function addTask(payload: Partial<Task>): Promise<Task> {
   });
 }
 
-/**
- * Удалить задачу по id
- * @param id - идентификатор задачи
- */
 export async function deleteTaskById(id: string): Promise<{ success: boolean }> {
   return await safeFetch<{ success: boolean }>(`${API_BASE}/tasks`, {
     method: "DELETE",
@@ -101,10 +80,6 @@ export async function deleteTaskById(id: string): Promise<{ success: boolean }> 
   });
 }
 
-/**
- * Очистить все задачи (batch delete)
- * @param tasks - массив задач для удаления
- */
 export async function clearTasks(tasks: Task[]): Promise<void> {
   await Promise.all(tasks.map((task) => deleteTaskById(task.id)));
 }

@@ -67,7 +67,7 @@ export default function TaskCRUD() {
     }
   }, [mounted]);
 
-  if (!mounted) return null; // или return <div>Loading...</div>
+  if (!mounted) return null;
 
   return (
     <div className="p-6 bg-slate-900 min-h-screen text-slate-100">

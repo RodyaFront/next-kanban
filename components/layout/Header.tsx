@@ -15,7 +15,7 @@ const Header = () => {
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <h1 className="text-white text-xl font-bold">Kanban Board</h1>
-            <div className="text-gray-400">Загрузка...</div>
+            <div className="text-gray-400">Loading...</div>
           </div>
         </div>
       </header>
@@ -33,7 +33,7 @@ const Header = () => {
               variant="outline"
               size="sm"
             >
-              Войти
+              Sign in
             </Button>
           </div>
         </div>
@@ -46,12 +46,8 @@ const Header = () => {
       <div className="px-4 py-3">
         <div className="flex items-center justify-between">
           <h1 className="text-white text-xl font-bold">Kanban Board</h1>
-          
           <div className="flex items-center space-x-4">
-            {/* Информация о пользователе */}
             <UserInfo/>
-            
-            {/* Кнопка выхода */}
             <Button
               onClick={handleSignOut}
               variant="outline"
