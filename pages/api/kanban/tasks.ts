@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { getTasks, addTask, updateTask, deleteTask } from '../../../lib/serverStore';
+import { getTasks, addTask, updateTask, deleteTask } from '../../../lib/taskService';
 import { Task } from '@/shared/types/kanban';
 
 // Универсальная декларативная фильтрация задач

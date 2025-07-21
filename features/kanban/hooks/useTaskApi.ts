@@ -1,4 +1,4 @@
-import { addTask } from "@/lib/serverStore";
+import { addTask } from "@/lib/taskService";
 import { Task } from "@/shared/types/kanban";
 import { useState } from "react";
 
